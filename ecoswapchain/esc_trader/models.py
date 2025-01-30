@@ -14,6 +14,3 @@ class Trader(models.Model):
 
 
 
-
-
-

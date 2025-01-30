@@ -1,3 +1,5 @@
 configure .env
 *.log
 settings.py
+esc-server/pyvenv.cfg
+/__pycache__/

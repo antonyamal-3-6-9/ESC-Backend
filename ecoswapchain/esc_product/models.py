@@ -1,6 +1,7 @@
 from django.db import models
 
 # Create your models here.
+
 class Product(models.Model):
     seller = models.ForeignKey('esc_trader.Trader', on_delete=models.CASCADE, related_name='products')
     name = models.CharField(max_length=255)

@@ -25,3 +25,7 @@ class TraderRegistrationView(generics.CreateAPIView):
     
 
 
+
+    
+
+
