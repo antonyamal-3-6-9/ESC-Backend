@@ -8,12 +8,12 @@ from .models import Otp
 
 class EmailOtpCreateView(APIView):
 
-    def create(self, email):
+    def create(self, email, otp):
         message = Mail(
-            from_email='from_email@example.com',
-            to_emails='to@example.com',
-            subject='Sending with Twilio SendGrid is Fun',
-            html_content='<strong>and easy to do anywhere, even with Python</strong>')
+            from_email='sclera.prog@gmail.com',
+            to_emails=f'{email}',
+            subject='OTP VERIFICATION SWAPCHAIN',
+            html_content=f'<strong> Your Verification code is {otp}</strong>')
         try:
             file_path = "H:\EcoSwapChain\ESC-Backend\esc-server\ecoswapchain\configure .env"
             env_config = Config(RepositoryEnv(file_path))
@@ -35,7 +35,7 @@ class EmailOtpCreateView(APIView):
             otp.save
 
             # Call the send_email method
-            status_code = self.send_email(email)
+            status_code = self.send_email(otp.email, otp.code)
 
             if status_code == 202:  # SendGrid returns 202 for successfully queued emails
                 return Response({"message": "OTP sent successfully"}, status=status.HTTP_201_CREATED)

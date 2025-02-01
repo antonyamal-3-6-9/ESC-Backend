@@ -1,19 +1,24 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# User roles
 USER_ROLES = [
-    ('ADMIN', 'Admin'),
-    ('TRADER', 'Trader'),
-    ('SHIPPING_HUB_ADMIN', 'Shipping Hub Admin'),
+    ('admin', 'Admin'),
+    ('trader', 'Trader'),
+    ('shipping', 'Shipping'),
 ]
 
-class EcoUser(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    username = models.CharField(max_length=20)
+class EcoUser(AbstractUser):
+
+    admin='Admin'
+    trader='Trader'
+    shipping='Shipping'
+
+    username = None  # Remove the default username field
+    email = models.EmailField(unique=True)  # Use email as the username
     role = models.CharField(max_length=20, choices=USER_ROLES)
-    mobile_number = models.CharField(max_length=15, blank=True, null=True)
-    email = models.EmailField(unique=True)
+
+    USERNAME_FIELD = 'email'  # Set email as the unique identifier
+    REQUIRED_FIELDS = []  # No other required fields
 
     def __str__(self):
-        return f"{self.user.username} ({self.role})"
+        return f"{self.email} ({self.role})"

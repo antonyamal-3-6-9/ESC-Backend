@@ -1,8 +1,8 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from .models import Trader
-from .serializer import TraderRegistrationSerializer
-
+from .serializer import TraderRegistrationSerializer, TraderRetrieveSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class TraderRegistrationView(generics.CreateAPIView):
     """
@@ -12,17 +12,24 @@ class TraderRegistrationView(generics.CreateAPIView):
     serializer_class = TraderRegistrationSerializer
 
     def create(self, request, *args, **kwargs):
-        
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        # ✅ Save and get the created trader instance
         trader = serializer.save()
+
+        # ✅ Generate JWT token for the newly created user
+        refresh = RefreshToken.for_user(trader.eco_user)
+        access_token = str(refresh.access_token)
+
+        # ✅ Use a separate serializer for output
+        trader_data = TraderRetrieveSerializer(trader).data
+
         return Response({
             "message": "Trader registered successfully",
-            "trader_id": trader.id,
-            "eco_user_id": trader.eco_user.id,
-            "username": trader.eco_user.user.username,
+            "access_token": access_token,
+            "trader": trader_data  # Return the serialized trader data
         }, status=status.HTTP_201_CREATED)
-    
 
 
 
