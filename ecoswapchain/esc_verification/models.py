@@ -4,7 +4,7 @@ import random
 # Create your models here.
 
 class Otp(models.Model):
-    code = models.IntegerField
+    code = models.IntegerField(null = True)
     email = models.EmailField(max_length=254, unique=True)
 
     def generate(self):

@@ -8,7 +8,7 @@ from .models import Otp
 
 class EmailOtpCreateView(APIView):
 
-    def create(self, email, otp):
+    def send_email(self, email, otp):
         message = Mail(
             from_email='sclera.prog@gmail.com',
             to_emails=f'{email}',
@@ -30,9 +30,12 @@ class EmailOtpCreateView(APIView):
             if not email:
                 raise ValueError("Email is required")
             
+            if Otp.objects.filter(email=email).exists():
+                Otp.objects.filter(email=email).delete()
+            
             otp = Otp.objects.create(email=email)
             otp.generate()
-            otp.save
+            otp.save()
 
             # Call the send_email method
             status_code = self.send_email(otp.email, otp.code)
@@ -72,6 +75,7 @@ class EmailOtpVerifyView(APIView):
             # Fetch the OTP record for the given email
             saved_otp = Otp.objects.get(email=email)
             
+            print(saved_otp.code)
             # Check if the provided OTP matches the saved OTP
             if int(otp) == saved_otp.code:
                 # Verification successful
