@@ -12,6 +12,7 @@ class TraderRegistrationSerializer(serializers.ModelSerializer):
         model = Trader
         fields = ['email', 'password', 'first_name', 'last_name']
 
+
     def create(self, validated_data):
         # Extract user-related data
         email = validated_data.pop('email')

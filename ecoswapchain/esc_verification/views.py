@@ -75,9 +75,9 @@ class EmailOtpVerifyView(APIView):
             # Fetch the OTP record for the given email
             saved_otp = Otp.objects.get(email=email)
             
-            print(saved_otp.code)
+            print(otp)
             # Check if the provided OTP matches the saved OTP
-            if int(otp) == saved_otp.code:
+            if int(otp) == int(saved_otp.code):
                 # Verification successful
                 return Response({"success": "Verification successful"}, status=status.HTTP_202_ACCEPTED)
             else:
