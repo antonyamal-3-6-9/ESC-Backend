@@ -82,17 +82,17 @@ class EmailOtpVerifyView(APIView):
                 return Response({"success": "Verification successful"}, status=status.HTTP_202_ACCEPTED)
             else:
                 # OTP doesn't match
-                return Response({"error": "Verification Failed"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+                return Response({"message": "Verification Failed"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
         except Otp.DoesNotExist:
             # Email not found in the database
-            return Response({"error": "OTP record for this email does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": "OTP record for this email does not exist"}, status=status.HTTP_404_NOT_FOUND)
         
         except ValueError:
             # In case OTP is not an integer or there’s an error converting
-            return Response({"error": "Invalid OTP format"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Invalid OTP format"}, status=status.HTTP_400_BAD_REQUEST)
         
         except Exception as e:
             # Generic exception handling for unexpected errors
             print(f"Unexpected error: {str(e)}")
-            return Response({"error": "An unexpected error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"message": "An unexpected error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

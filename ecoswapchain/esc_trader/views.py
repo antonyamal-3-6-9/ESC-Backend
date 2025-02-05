@@ -4,6 +4,7 @@ from .models import Trader
 from .serializer import TraderRegistrationSerializer, TraderRetrieveSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
+from esc_user.serializer import EcoUserRetrieveSerializer
 
 class TraderRegistrationView(generics.CreateAPIView):
     """
@@ -13,28 +14,41 @@ class TraderRegistrationView(generics.CreateAPIView):
     serializer_class = TraderRegistrationSerializer
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        try:
+            # Validate and save the trader instance
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            trader = serializer.save()
 
-        # ✅ Save and get the created trader instance
-        trader = serializer.save()
+            # Generate JWT tokens for the newly created user
+            refresh = RefreshToken.for_user(trader.eco_user)
+            access_token = str(refresh.access_token)
 
-        # ✅ Generate JWT token for the newly created user
-        refresh = RefreshToken.for_user(trader.eco_user)
-        access_token = str(refresh.access_token)
+            # Use a separate serializer for the response
+            trader_data = EcoUserRetrieveSerializer(trader.eco_user).data
 
-        # ✅ Use a separate serializer for output
-        trader_data = TraderRetrieveSerializer(trader).data
-        response = Response({"access_token": access_token, 'trader' : trader_data}, status=status.HTTP_200_OK)
+            # Prepare the response
+            response = Response(
+                {"token": access_token, "user": trader_data},
+                status=status.HTTP_201_CREATED,
+            )
 
-        response.set_cookie(
-            key="refresh_token",
-            value=str(refresh),
-            httponly=True,
-            secure=False,  # HTTPS only
-            samesite="Lax"
-        )
-        return response
+            # Set the refresh token in an HttpOnly cookie
+            response.set_cookie(
+                key="refresh_token",
+                value=str(refresh),
+                httponly=True,
+                secure=False,  # Set to True in production (HTTPS only)
+                samesite="Lax",
+            )
+
+            return response
+
+        except Exception as e:
+            # Handle unexpected errors
+            return Response(
+                {"message": "Something went wrong on the server. Try again later."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class TraderLoginView(APIView):
     def post(self, request):
@@ -46,9 +60,9 @@ class TraderLoginView(APIView):
                 if trader.eco_user.check_password(password):
                     refresh = RefreshToken.for_user(trader.eco_user)
                     access_token = str(refresh.access_token)
-                    trader_data = TraderRetrieveSerializer(trader).data
+                    trader_data = EcoUserRetrieveSerializer(trader.eco_user).data
 
-                    response = Response({"access_token": access_token}, status=status.HTTP_200_OK)
+                    response = Response({"token": access_token, "user" : trader_data}, status=status.HTTP_200_OK)
 
                     response.set_cookie(
                         key="refresh_token",
@@ -72,7 +86,7 @@ class TraderLoginView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({
-                "message": "An error occurred"
+                "message": "Something went wrong on the server. Try again later."
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     

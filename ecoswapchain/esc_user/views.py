@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -13,32 +14,32 @@ class TokenUpdateView(APIView):
     def post(self, request):
             refresh_token = request.COOKIES.get("refresh_token")
             if not refresh_token:
-                return Response({"error": "Refresh token missing"}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({"message": "Refresh token missing"}, status=status.HTTP_401_UNAUTHORIZED)
 
             try:
                 refresh = RefreshToken(refresh_token)
                 access_token = str(refresh.access_token)
-                return Response({"access_token": access_token}, status=status.HTTP_200_OK)
+                return Response({"token": access_token}, status=status.HTTP_200_OK)
             except Exception:
-                return Response({"error": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
-
+                return Response({"message": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
+            
 class CheckUser(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
-    def get(self, request, role):
+    def get(self, request):
         try:
-            if role == request.user.role:
-                return Response({
-                    "first_name": request.user.first_name,
-                    "last_name": request.user.last_name,
-                    "role": request.user.role
-
-                }, status=status.HTTP_200_OK)
-            else:
-                return Response({
-                    "message": "Unauthorized"
-                }, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({
+                "first_name": request.user.first_name,
+                "last_name": request.user.last_name,
+                "role": request.user.role
+            }, status=status.HTTP_200_OK)
+        
+        except AuthenticationFailed:
+            return Response({
+                "message": "Unauthorized"
+            }, status=status.HTTP_401_UNAUTHORIZED)
+        
         except Exception as e:
             return Response({
                 "message": "Internal server error"
