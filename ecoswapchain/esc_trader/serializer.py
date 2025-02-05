@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from esc_user.models import EcoUser  
 from .models import Trader
-from esc_user.serializer import EcoUserSerializer
+
 
 class TraderRegistrationSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(write_only=True)

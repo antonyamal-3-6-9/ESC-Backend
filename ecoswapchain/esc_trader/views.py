@@ -1,7 +1,7 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from .models import Trader
-from .serializer import TraderRegistrationSerializer, TraderRetrieveSerializer
+from .serializer import TraderRegistrationSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from esc_user.serializer import EcoUserRetrieveSerializer
@@ -55,6 +55,7 @@ class TraderLoginView(APIView):
         try:
             email = request.data['email']
             password = request.data['password']
+            print(email)
             if Trader.objects.filter(eco_user__email=email).exists():
                 trader = Trader.objects.get(eco_user__email=email)
                 if trader.eco_user.check_password(password):

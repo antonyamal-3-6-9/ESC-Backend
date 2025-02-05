@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('check/<str:role>/', CheckUser.as_view(), name='check-user'),
+    path('check/', CheckUser.as_view(), name='check-user'),
     path('token/update/', TokenUpdateView.as_view(), name="update-token"),
     path('logout/', LogoutView.as_view(), name="logout-view")
 ]

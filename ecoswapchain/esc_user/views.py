@@ -8,8 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import EcoUser
 
 class TokenUpdateView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+
 
     def post(self, request):
             refresh_token = request.COOKIES.get("refresh_token")
@@ -28,6 +27,7 @@ class CheckUser(APIView):
     authentication_classes = [JWTAuthentication]
 
     def get(self, request):
+        print(request.user)
         try:
             return Response({
                 "first_name": request.user.first_name,
