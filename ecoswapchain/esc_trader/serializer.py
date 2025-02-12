@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from esc_user.models import EcoUser  
 from .models import Trader
+from .helpers import create_wallet
 
 
 class TraderRegistrationSerializer(serializers.ModelSerializer):
@@ -39,6 +40,8 @@ class TraderRegistrationSerializer(serializers.ModelSerializer):
         )
 
         trader.verified = True
+        wallet = create_wallet()
+        trader.wallet = wallet
         trader.save()
 
         return trader

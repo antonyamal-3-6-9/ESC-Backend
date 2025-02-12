@@ -27,6 +27,8 @@ class TraderRegistrationView(generics.CreateAPIView):
             # Use a separate serializer for the response
             trader_data = EcoUserRetrieveSerializer(trader.eco_user).data
 
+            
+
             # Prepare the response
             response = Response(
                 {"token": access_token, "user": trader_data},
@@ -90,6 +92,4 @@ class TraderLoginView(APIView):
                 "message": "Something went wrong on the server. Try again later."
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-    
-
 
