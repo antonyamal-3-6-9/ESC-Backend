@@ -8,13 +8,13 @@ class TokenTransaction(models.Model):
     
     transfered_to = models.ForeignKey(
         "esc_trader.Trader", 
-        verbose_name=_("Receiver"), 
+        verbose_name=("Receiver"), 
         on_delete=models.CASCADE, 
         related_name="received_token_transactions"
     )
     transfered_from = models.ForeignKey(
         "esc_trader.Trader", 
-        verbose_name=_("Sender"), 
+        verbose_name=("Sender"), 
         on_delete=models.CASCADE, 
         related_name="sent_token_transactions"
     )
@@ -40,7 +40,7 @@ class NFTMintTransaction(models.Model):
 
     minted_to = models.ForeignKey(
         "esc_trader.Trader", 
-        verbose_name=_("Minted To"), 
+        verbose_name=("Minted To"), 
         on_delete=models.CASCADE, 
         related_name="minted_nfts"
     )
@@ -62,13 +62,13 @@ class NFTTransferTransaction(models.Model):
 
     transfered_to = models.ForeignKey(
         "esc_trader.Trader", 
-        verbose_name=_("Receiver"), 
+        verbose_name=("Receiver"), 
         on_delete=models.CASCADE, 
         related_name="received_nfts"
     )
     transfered_from = models.ForeignKey(
         "esc_trader.Trader", 
-        verbose_name=_("Sender"), 
+        verbose_name=("Sender"), 
         on_delete=models.CASCADE, 
         related_name="sent_nfts"
     )

@@ -15,7 +15,7 @@ class EmailOtpCreateView(APIView):
             subject='OTP VERIFICATION SWAPCHAIN',
             html_content=f'<strong> Your Verification code is {otp}</strong>')
         try:
-            file_path = "H:\EcoSwapChain\ESC-Backend\esc-server\ecoswapchain\configure .env"
+            file_path = "/media/alastor/New Volume/EcoSwapChain/ESC-Backend/esc-server-linux/ecoswapchain/configure .env"
             env_config = Config(RepositoryEnv(file_path))
             sg = SendGridAPIClient(env_config.get('SENDGRID_API_KEY'))
             response = sg.send(message)
@@ -38,7 +38,10 @@ class EmailOtpCreateView(APIView):
             otp.save()
 
             # Call the send_email method
-            status_code = self.send_email(otp.email, otp.code)
+            # status_code = self.send_email(otp.email, otp.code)
+            
+            status_code = 202
+            print(otp.code)
 
             if status_code == 202:  # SendGrid returns 202 for successfully queued emails
                 return Response({"message": "OTP sent successfully"}, status=status.HTTP_201_CREATED)

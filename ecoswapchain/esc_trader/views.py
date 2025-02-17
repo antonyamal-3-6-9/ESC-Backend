@@ -19,6 +19,7 @@ class TraderRegistrationView(generics.CreateAPIView):
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             trader = serializer.save()
+            key = serializer.context.get("key")
 
             # Generate JWT tokens for the newly created user
             refresh = RefreshToken.for_user(trader.eco_user)
@@ -31,7 +32,7 @@ class TraderRegistrationView(generics.CreateAPIView):
 
             # Prepare the response
             response = Response(
-                {"token": access_token, "user": trader_data},
+                {"token": access_token, "user": trader_data, "key": key},
                 status=status.HTTP_201_CREATED,
             )
 
@@ -48,6 +49,7 @@ class TraderRegistrationView(generics.CreateAPIView):
 
         except Exception as e:
             # Handle unexpected errors
+            print(e)
             return Response(
                 {"message": "Something went wrong on the server. Try again later."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

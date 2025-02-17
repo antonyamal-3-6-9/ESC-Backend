@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from esc_user.models import EcoUser  
 from .models import Trader
-from .helpers import create_wallet
+from .helper import create_wallet
 
 
 class TraderRegistrationSerializer(serializers.ModelSerializer):
@@ -14,7 +14,6 @@ class TraderRegistrationSerializer(serializers.ModelSerializer):
         model = Trader
         fields = ['email', 'password', 'first_name', 'last_name']
 
-
     def create(self, validated_data):
         # Extract user-related data
         email = validated_data.pop('email')
@@ -24,6 +23,8 @@ class TraderRegistrationSerializer(serializers.ModelSerializer):
 
         if EcoUser.objects.filter(email=email).exists():
             raise serializers.ValidationError("User with this email already exists")
+        
+        walletData = create_wallet()  # Ensure it returns {"wallet": wallet_instance, "key": key_value}
 
         # Create user (EcoUser extending AbstractUser)
         eco_user = EcoUser.objects.create_user(
@@ -37,12 +38,12 @@ class TraderRegistrationSerializer(serializers.ModelSerializer):
         # Create Trader instance
         trader = Trader.objects.create(
             eco_user=eco_user,
+            wallet=walletData["wallet"],  # Ensure this is a valid Wallet model instance
+            verified=True
         )
 
-        trader.verified = True
-        wallet = create_wallet()
-        trader.wallet = wallet
-        trader.save()
 
-        return trader
-    
+        # Store the encryption key in the serializer context
+        self.context["key"] = walletData["key"]
+
+        return trader 
