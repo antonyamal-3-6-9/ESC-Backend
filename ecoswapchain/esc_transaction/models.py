@@ -44,6 +44,14 @@ class NFTMintTransaction(models.Model):
         on_delete=models.CASCADE, 
         related_name="minted_nfts"
     )
+    
+    lifecycle = models.ForeignKey(
+        "esc_nft.NFT", 
+        verbose_name=("NFT"), 
+        on_delete=models.CASCADE, 
+        related_name="mint_lifecycle", 
+        null=True, blank=True
+    )
 
     # ✅ New Fields
     nft_name = models.CharField(max_length=100)  # Name of the NFT

@@ -41,8 +41,8 @@ class TraderRegistrationView(generics.CreateAPIView):
                 key="refresh_token",
                 value=str(refresh),
                 httponly=True,
-                secure=False,  # Set to True in production (HTTPS only)
-                samesite="Lax",
+                secure=True,  # Set to True in production (HTTPS only)
+                samesite="None",
             )
 
             return response
@@ -73,8 +73,8 @@ class TraderLoginView(APIView):
                         key="refresh_token",
                         value=str(refresh),
                         httponly=True,
-                        secure=False,  # HTTPS only
-                        samesite="Lax"
+                        secure=True,  # HTTPS only
+                        samesite="None"
                     )
                     return response
                 else: 

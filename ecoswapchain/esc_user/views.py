@@ -8,19 +8,27 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import EcoUser
 
 class TokenUpdateView(APIView):
-
-
     def post(self, request):
             refresh_token = request.COOKIES.get("refresh_token")
             if not refresh_token:
+                print("Refresh token missing")
                 return Response({"message": "Refresh token missing"}, status=status.HTTP_401_UNAUTHORIZED)
-
             try:
                 refresh = RefreshToken(refresh_token)
                 access_token = str(refresh.access_token)
-                return Response({"token": access_token}, status=status.HTTP_200_OK)
-            except Exception:
+                response = Response({"access_token": access_token}, status=status.HTTP_200_OK)
+                response.set_cookie(
+                key="refresh_token",
+                value=str(refresh),
+                httponly=True,
+                secure=True,  # Set to True in production (HTTPS only)
+                samesite="None",
+            )
+                return response
+            except Exception as e:
+                print(str(e))
                 return Response({"message": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
+
             
 class CheckUser(APIView):
     permission_classes = [IsAuthenticated]
