@@ -1,6 +1,7 @@
 import requests
 import json
 from esc_wallet.serializer import WalletSerializer
+from esc_transaction.serializer import TokenTransactionSerializer
 import secrets
 import string
 
@@ -43,7 +44,19 @@ def create_wallet():
         wallet_serializer = WalletSerializer(data=data, context={"key": encryption_key})
         wallet_serializer.is_valid(raise_exception=True)
         wallet = wallet_serializer.save()
-
+        
+        transactionData = {
+            "transaction_hash": signature,
+            "amount": 100,
+            "transfered_to": wallet,
+            "transaction_type" : "REWARD",
+            "status" : "CONFIRMED"
+        }
+        
+        transaction_serializer = TokenTransactionSerializer(data=transactionData)
+        transaction_serializer.is_valid(raise_exception=True)
+        transaction_serializer.save()
+        
         return {
             "wallet": wallet,
             "key": encryption_key

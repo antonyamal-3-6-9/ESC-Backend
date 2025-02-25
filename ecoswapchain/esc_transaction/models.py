@@ -7,16 +7,18 @@ class TokenTransaction(models.Model):
     amount = models.BigIntegerField()
     
     transfered_to = models.ForeignKey(
-        "esc_trader.Trader", 
+        "esc_wallet.Wallet", 
         verbose_name=("Receiver"), 
         on_delete=models.CASCADE, 
-        related_name="received_token_transactions"
+        related_name="received_token_transactions",
+        null=True
     )
     transfered_from = models.ForeignKey(
-        "esc_trader.Trader", 
+        "esc_wallet.Wallet", 
         verbose_name=("Sender"), 
         on_delete=models.CASCADE, 
-        related_name="sent_token_transactions"
+        related_name="sent_token_transactions",
+        null=True
     )
 
     TRANSACTION_TYPES = [
@@ -24,12 +26,11 @@ class TokenTransaction(models.Model):
         ("SELL", "Sell"),
         ("REWARD", "Reward"),
     ]
-    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
+    
+    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES, default="REWARD")
 
     # ✅ New Fields
-    network_fees = models.DecimalField(max_digits=10, decimal_places=5, default=0.0)  # Transaction Fee
     status = models.CharField(max_length=20, choices=[("PENDING", "Pending"), ("CONFIRMED", "Confirmed"), ("FAILED", "Failed")], default="PENDING")
-    block_number = models.BigIntegerField(null=True, blank=True)  # Block where the transaction was confirmed
 
     def __str__(self):
         return f"{self.transaction_type} - {self.amount} - {self.transaction_hash[:10]}"
@@ -39,7 +40,7 @@ class NFTMintTransaction(models.Model):
     time_stamp = models.DateTimeField(auto_now_add=True, db_index=True)
 
     minted_to = models.ForeignKey(
-        "esc_trader.Trader", 
+        "esc_wallet.Wallet", 
         verbose_name=("Minted To"), 
         on_delete=models.CASCADE, 
         related_name="minted_nfts"
@@ -69,13 +70,13 @@ class NFTTransferTransaction(models.Model):
     time_stamp = models.DateTimeField(auto_now_add=True, db_index=True)
 
     transfered_to = models.ForeignKey(
-        "esc_trader.Trader", 
+        "esc_wallet.Wallet", 
         verbose_name=("Receiver"), 
         on_delete=models.CASCADE, 
         related_name="received_nfts"
     )
     transfered_from = models.ForeignKey(
-        "esc_trader.Trader", 
+        "esc_wallet.Wallet", 
         verbose_name=("Sender"), 
         on_delete=models.CASCADE, 
         related_name="sent_nfts"

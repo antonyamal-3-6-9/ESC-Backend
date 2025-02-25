@@ -5,7 +5,6 @@ class Wallet(models.Model):
     public_key = models.CharField(max_length=200, unique=True, db_index=True)
     private_key = models.CharField(max_length=600, unique=True, db_index=True)
     balance = models.DecimalField(max_digits=10, decimal_places=5, default=0.0)
-    transactions = models.ManyToManyField("esc_transaction.TokenTransaction", related_name="wallet_transactions")
     key = models.CharField(max_length=255, db_index=True)  # Stores a hashed key
 
     def __str__(self):
